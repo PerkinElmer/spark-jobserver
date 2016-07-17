@@ -22,7 +22,6 @@ get_abs_script_path
 
 GC_OPTS="-XX:+UseConcMarkSweepGC
          -verbose:gc -XX:+PrintGCTimeStamps -Xloggc:$appdir/gc.out
-         -XX:MaxPermSize=512m
          -XX:+CMSClassUnloadingEnabled "
 
 # To truly enable JMX in AWS and other containerized environments, also need to set
@@ -43,9 +42,23 @@ if [ -f "$PIDFILE" ] && kill -0 $(cat "$PIDFILE"); then
    exit 1
 fi
 
+# David Gosalvez 20160715
+# Dependency management strategy for Signals
+# signals-spark-command-assembly-0.1.jar contains our commands (SparkApps)
+# the jar is fattened with aws and databricks dependencies
+# spark-job-server.jar is needed because NewSparkJobs defined in signals-spark-command depend on
+# job-server types such as JobData and JobOutput
+# We use local:// because we know that the above jars are available in all executor nodes.  Doing so
+# is more efficient than relying on the driver to distribute the dependencies
+# The aws dependency is also provided via --packages.  Without it the driver program fails.
+# I think this is because there are more sub-dependencies that were not package properly into our fat jar.
+
 cmd='$SPARK_HOME/bin/spark-submit --class $MAIN --driver-memory $JOBSERVER_MEMORY
+  --deploy-mode client
   --conf "spark.executor.extraJavaOptions=$LOGGING_OPTS"
   --driver-java-options "$GC_OPTS $JAVA_OPTS $LOGGING_OPTS $CONFIG_OVERRIDES"
+  --jars local://$SPARK_JOBSERVER_HOME/spark-job-server.jar,local://$SPARK_HOME/jars/signals-spark-command-assembly-0.1.jar
+  --packages org.apache.hadoop:hadoop-aws:2.6.3
   $@ $appdir/spark-job-server.jar $conffile'
 if [ -z "$JOBSERVER_FG" ]; then
   eval $cmd > $LOG_DIR/server_start.log 2>&1 < /dev/null &

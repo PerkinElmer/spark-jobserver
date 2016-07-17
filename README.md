@@ -2,6 +2,8 @@
 
 [![Join the chat at https://gitter.im/spark-jobserver/spark-jobserver](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/spark-jobserver/spark-jobserver?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+This is a fork of [spark-job-server](https://github.com/spark-jobserver/spark-jobserver) used by PerkinElmer Signals.  The intent is to use this fork only for minor configuration and build environment changes and to keep it in synch with released versions of the original.
+
 spark-jobserver provides a RESTful interface for submitting and managing [Apache Spark](http://spark-project.org) jobs, jars, and job contexts.
 This repo contains the complete Spark job server project, including unit tests and deploy scripts.
 It was originally started at [Ooyala](http://www.ooyala.com), but this is now the main development repo.
