@@ -128,7 +128,7 @@ object JobServerBuild extends Build {
         expose(9999)    // for JMX
         env("MESOS_VERSION", mesosVersion)
         runRaw("""echo "deb http://repos.mesosphere.io/ubuntu/ trusty main" > /etc/apt/sources.list.d/mesosphere.list && \
-                  apt-key adv --keyserver keyserver.ubuntu.com --recv E56151BF && \
+                  apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv E56151BF && \
                   apt-get -y update && \
                   apt-get -y install mesos=${MESOS_VERSION} && \
                   apt-get clean
@@ -204,7 +204,7 @@ object JobServerBuild extends Build {
     organization := "spark.jobserver",
     crossPaths   := true,
     crossScalaVersions := Seq("2.10.6","2.11.8"),
-    scalaVersion := sys.env.getOrElse("SCALA_VERSION", "2.10.6"),
+    scalaVersion := sys.env.getOrElse("SCALA_VERSION", "2.11.8"),
     publishTo    := Some(Resolver.file("Unused repo", file("target/unusedrepo"))),
     // scalastyleFailOnError := true,
     runScalaStyle := {
